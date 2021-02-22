@@ -1,0 +1,11 @@
+<form name='liqpay' method="POST" action="https://www.liqpay.ua/api/3/checkout"
+      accept-charset="utf-8">
+    {% csrf_token %}
+    <input type="hidden" name="data" value="{{ data }}"/>
+    <input type="hidden" name="signature" value="{{ signature }}"/>
+    <input id='pay' type="image" src="//static.liqpay.ua/buttons/p1ru.radius.png"/>
+</form>
+<script>
+    var btn = document.getElementById('pay')
+    btn.click()
+</script>

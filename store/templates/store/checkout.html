@@ -1,0 +1,235 @@
+{% extends 'store/main.html' %}
+{% block category_block %}
+    {% for parent in parents %}
+        {% if parent.name == 'default' %}
+
+        {% endif %}
+        <div class="dropdown show">
+            <a class="nav-link" href="{% url 'category' parent.slug %}"
+               role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false">
+                {{ parent.name }}<span class="sr-only">(current)</span></a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                {% for child in childs %}
+                    {% if child.parent == parent %}
+                        <a class="dropdown-item" href="{% url 'category' child.slug %}">{{ child.name }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock category_block %}
+{% load static %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="box-element" id="form-wrapper">
+                <form id="form">
+                    {% if not user.is_authenticated %}
+                        <div id="user-info">
+                            <div class="form-field">
+                                <input required class="form-control" type="text" name="name" placeholder="Ім'я..">
+                            </div>
+                            <div class="form-field">
+                                <input required class="form-control" type="email" name="email" placeholder="Емейл..">
+                            </div>
+                            <hr>
+                        </div>
+                    {% endif %}
+
+                    <div id="shipping-info">
+                        <p>Інформація для відправлення:</p>
+                        <hr>
+                        <div class="form-field">
+                            <input class="form-control" type="text" value="" name="address" placeholder="Адреса.."
+                                   required>
+                        </div>
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="city" placeholder="Місто.." required>
+                        </div>
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="state" placeholder="Район.." required>
+                        </div>
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="zipcode" placeholder="Поштовий індекс.."
+                                   required>
+                        </div>
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="country" placeholder="Країна.." required>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <input id="form-button" class="btn btn-success btn-block" type="submit" value="Далі">
+                </form>
+            </div>
+
+            <br>
+            <div class="box-element hidden" id="payment-info">
+                {% if user.is_authenticated %}
+                    <a id="checkout" style="float:right;" class="btn btn-outline-info"
+                       href="{% url 'pay_view' order.id %}">Приват24</a>
+                {% else %}
+                    <button id="privat24" style="float:right;" class="btn btn-outline-info">Приват24</button>
+                {% endif %}
+                <button id="make-payment" class="btn btn-outline-info">Оплатити</button>
+            </div>
+            <br>
+            <div class="box-element hidden" id="payment-simple"></div>
+        </div>
+        <div class="col-lg-6">
+            <div class="box-element">
+                <a class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Назад у кошик</a>
+                <hr>
+                <h3>Замовлення</h3>
+                <hr>
+                {% for item in items %}
+                    <div class="cart-row">
+                        <div style="flex:2"><img class="row-image" src="{{ item.product.imageURL }}"></div>
+                        <div style="flex:2"><p>{{ item.product.name }}</p></div>
+                        <div style="flex:1"><p>{{ item.product.price|floatformat:2 }} UAH</p></div>
+                        <div style="flex:1"><p>&nbsp;&nbsp;x{{ item.quantity }}</p></div>
+                    </div>
+                {% endfor %}
+                <h5>Загальна кількість: {{ order.get_cart_items }}</h5>
+                <h5>Загальна вартість: {{ order.get_cart_total|floatformat:2 }} UAH</h5>
+            </div>
+        </div>
+    </div>
+    <br><br>
+
+    <script type="text/javascript">
+        var shipping = '{{order.shipping}}'
+
+        if (shipping === 'False' && user !== 'AnonymousUser') {
+            //Show payment if logged in user wants to buy an item that does not require shipping
+            document.getElementById('payment-info').classList.add("hidden");
+        }
+
+        var form = document.getElementById('form')
+        form.addEventListener('submit', function (e) {
+            e.preventDefault()
+            console.log('Form Submitted...')
+            document.getElementById('form-button').classList.add("hidden");
+            document.getElementById('payment-info').classList.remove("hidden");
+        })
+
+        document.getElementById('make-payment').addEventListener('click', function (e) {
+            submitFormData()
+        })
+
+
+        function submitFormData() {
+            console.log('Payment button clicked')
+
+            var userFormData = {
+                'name': null,
+                'email': null,
+                'total': '{{order.get_cart_total}}',
+            }
+
+            var shippingInfo = {
+                'address': null,
+                'city': null,
+                'state': null,
+                'zipcode': null,
+            }
+
+            if (shipping !== 'False') {
+                shippingInfo.address = form.address.value
+                shippingInfo.city = form.city.value
+                shippingInfo.state = form.state.value
+                shippingInfo.zipcode = form.zipcode.value
+            }
+
+            if (user === 'AnonymousUser') {
+                userFormData.name = form.name.value
+                userFormData.email = form.email.value
+            }
+
+            console.log('Shipping Info:', shippingInfo)
+            console.log('User Info:', userFormData)
+
+            var url = "/process_order/"
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'applicaiton/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({'form': userFormData, 'shipping': shippingInfo, 'action': 'payment'}),
+
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log('Success:', data);
+
+                    document.getElementById('payment-simple').classList.remove("hidden");
+                    let simple = document.getElementById('payment-simple');
+                    simple.innerHTML = '<p>Ви маєте оплатити {{ order.get_cart_total }} uah на карту 123141512515115.\
+                    Обов`язково не забудьте вказати номер замовлення - {{ order.id }} ,для ідентифікації!</p>';
+
+                    cart = {}
+                    document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+                })
+        }
+
+        document.getElementById('privat24').addEventListener('click', function (e) {
+            submitFormDataPrivat()
+        })
+
+
+        function submitFormDataPrivat() {
+            console.log('Payment button clicked')
+
+            var userFormData = {
+                'name': null,
+                'email': null,
+                'total': '{{order.get_cart_total}}',
+            }
+
+            var shippingInfo = {
+                'address': null,
+                'city': null,
+                'state': null,
+                'zipcode': null,
+            }
+
+            if (shipping !== 'False') {
+                shippingInfo.address = form.address.value
+                shippingInfo.city = form.city.value
+                shippingInfo.state = form.state.value
+                shippingInfo.zipcode = form.zipcode.value
+            }
+
+            if (user === 'AnonymousUser') {
+                userFormData.name = form.name.value
+                userFormData.email = form.email.value
+            }
+
+            console.log('Shipping Info:', shippingInfo)
+            console.log('User Info:', userFormData)
+
+            var url = "/process_order/"
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'applicaiton/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({'form': userFormData, 'shipping': shippingInfo, 'action': 'privat24'}),
+
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log('Success:', data);
+                   var url = "{% url 'pay_view' 123 %}";
+                   window.location.href = url.replace('123', data);
+                })
+        }
+    </script>
+{% endblock content %}
+
+
+

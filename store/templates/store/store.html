@@ -1,0 +1,68 @@
+{% extends 'store/main.html' %}
+{% block category_block %}
+    {% for parent in parents %}
+        {% if parent.name == 'default'%}
+
+        {% endif %}
+        <div class="dropdown show">
+            <a class="nav-link" href="{% url 'category' parent.slug %}"
+               role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false">
+                {{ parent.name }}<span class="sr-only">(current)</span></a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                {% for child in childs %}
+                    {% if child.parent == parent %}
+                        <a class="dropdown-item" href="{% url 'category' child.slug %}">{{ child.name }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock category_block %}
+{% load static %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-4">
+            {% block breadcrumb %}
+                {% for name, url in category.get_breadcrumb %}
+                    <a href="{{ url }}">{{ name }}</a>	&#62;
+                {% endfor %}
+            {% endblock breadcrumb %}
+
+            <div class="dropdown">
+                <form action="{% url 'store' %}" method="get">
+                    <label for="filter">
+                        <select class="btn btn-secondary btn-sm dropdown-toggle bg-white " style="color: black" name="products">
+                            <option class="dropdown-item" value='name'>A-z</option>
+                            <option class="dropdown-item" value='-name'>Z-a</option>
+                            <option class="dropdown-item" value='-price'>Дорогий-дешевий</option>
+                            <option class="dropdown-item" value='price'>Дешевий-дорогий</option>
+                        </select>
+                    </label>
+                    <input class="btn btn-sm btn-outline-success" type="submit" value="Відсортувати"/>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        {% for product in products %}
+            <div class="col-lg-4">
+                <img class="thumbnail" src="{{ product.imageURL }}">
+                <div class="box-element product">
+                    <h6 style="max-width: 400px"><strong>{{ product.name }}</strong></h6>
+                    <hr>
+
+                    <button data-product="{{ product.id }}" data-action="add"
+                            class="btn btn-outline-secondary add-btn update-cart">У візок
+                    </button>
+
+                    <a class="btn btn-outline-success" href="{% url 'product' product.id %}">Детальніше</a>
+                    <p style="display: inline-block; float: right;"><font size="5">{{ product.price }} UAH</font></p>
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <br><br>
+{% endblock content %}

@@ -1,0 +1,182 @@
+{% extends 'store/main.html' %}
+{% block category_block %}
+    {% for parent in parents %}
+        {% if parent.name == 'default' %}
+
+        {% endif %}
+        <div class="dropdown show">
+            <a class="nav-link" href="{% url 'category' parent.slug %}"
+               role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false">
+                {{ parent.name }}<span class="sr-only">(current)</span></a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                {% for child in childs %}
+                    {% if child.parent == parent %}
+                        <a class="dropdown-item" href="{% url 'category' child.slug %}">{{ child.name }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock category_block %}
+{% load static %}
+{% block content %}
+    <div class="row">
+        <div class="col-md">
+            <div class="card card-body">
+                <h5>Покупець:</h5>
+                <hr>
+                <a class="btn btn-outline-info  btn-sm btn-block" href="{% url 'account' %}">Редагувати профіль</a>
+                <br>
+                <br>
+            </div>
+        </div>
+
+        <div class="col-md" style="z-index: -1;">
+            <div class="card card-body">
+                <h5>Контактні дані</h5>
+                <hr>
+                <p>Емейл: {{ customer.email }}</p>
+                <p>Телефон: {{ customer.phone }}</p>
+            </div>
+        </div>
+
+    </div>
+
+    <br>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="dropdown">
+                <form action="{% url 'user-page' %}" method="get">
+                    <label for="featured">
+                        <select class="btn btn-secondary btn-sm dropdown-toggle btn-outline-info bg-white"
+                                style="color: black;" name="status">
+                            <option class="dropdown-item" value=''>Усі</option>
+                            {% for stts, view_stts in statuses %}
+                                <option class="dropdown-item" value='{{ stts }}'>{{ view_stts }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <input class="btn btn-outline-info btn-sm" type="submit" value="Відсортувати"/>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="cart-row">
+                <div style="flex:1"><strong>#</strong></div>
+                <div style="flex:1"><p align="left"><strong>Загальна вартість</strong></p></div>
+                <div style="flex:2"><p align="left"><strong>Дата</strong></p></div>
+                <div style="flex:1"><p align="left"><strong>Статус</strong></p></div>
+                <div style="flex:1"><strong></strong></div>
+            </div>
+            {% for order in orders %}
+                <div class="cart-row">
+                    <div style="flex:1">
+                        <button class="myBtn btn btn-outline-info"><font size="3">{{ order.id }}</font></button>
+                        <!-- The Modal -->
+                        <div id="myModal" class="modal">
+
+                            <!-- Modal content -->
+
+                            <div class="modal-content" id="modal-content">
+
+                                <span class="close">&times;</span>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div style="flex:1"><p><font size="3">{{ order.total_price|floatformat:2 }} UAH</font></p></div>
+                    <div style="flex:2"><p><font size="3">{{ order.date_ordered }}</font></p></div>
+                    <div style="flex:1"><p><font size="3">{{ order.get_status }}</font></p></div>
+                    <div style="flex:1">
+                        {% if order.status != 'Canceled' and order.status != 'Payed' %}
+                            <button type="button" class="close cancel_order" aria-label="Close"
+                                    style="outline: none; z-index: -1;"
+                                    data-toggle="modal" data-target="#exampleModal" data-order_m="{{ order.id }}">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            {#        Pop up for order#}
+            <div class="modal fade show" id="exampleModal" tabindex="-1" role="dialog"
+                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Обережно</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                    style="outline: none">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Ви точно хочите скасувати замовлення №<p id="mdl-body-orderId"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Ні
+                            </button>
+                            <button type="button" class="btn btn-primary cncl-order"
+                                    id='mdl-confirm-btn' data-order="" data-action="cancel">Так, точно!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if orders.has_other_pages %}
+                <ul class="pagination">
+                    {% if orders.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ orders.previous_page_number }}">&laquo;</a>
+                        </li>
+                    {% else %}
+                        <li><span class="page-link">&laquo;</span></li>
+                    {% endif %}
+                    {% for i in orders.paginator.page_range %}
+                        {% if orders.number == i %}
+                            <li class="page-item disabled">
+                                <span class="page-link">{{ i }}<span class="sr-only">(current)</span></span>
+                            </li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if orders.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ orders.next_page_number }}">&raquo;</a>
+                        </li>
+                    {% else %}
+                        <li><span class="page-link">&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+    <script type="text/javascript" src="{% static 'js/pop_up.js' %}"></script>
+
+    <script>
+        var cancelBtn = document.getElementsByClassName('cancel_order')
+        for (i = 0; i < cancelBtn.length; i++) {
+            cancelBtn[i].addEventListener('click', function () {
+                var orderId = this.dataset.order_m
+                console.log(orderId)
+                document.getElementById('mdl-body-orderId').innerHTML = orderId + '?'
+                document.getElementById('mdl-confirm-btn').dataset.order = orderId
+                // console.log('productId:', productId, 'Action:', action)
+                // console.log('USER:', user
+            })
+        }
+
+
+    </script>
+
+
+{% endblock content %}
+
+

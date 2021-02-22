@@ -1,0 +1,120 @@
+{% extends 'store/main.html' %}
+{% block category_block %}
+    {% for parent in parents %}
+        {% if parent.name == 'default' %}
+
+        {% endif %}
+        <div class="dropdown show">
+            <a class="nav-link" href="{% url 'category' parent.slug %}"
+               role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false">
+                {{ parent.name }}<span class="sr-only">(current)</span></a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                {% for child in childs %}
+                    {% if child.parent == parent %}
+                        <a class="dropdown-item" href="{% url 'category' child.slug %}">{{ child.name }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock category_block %}
+{% load static %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="box-element">
+
+                <a class="btn btn-outline-dark" href="{% url 'store' %}">&#x2190; Продовжити покупки</a>
+
+                <br>
+                <br>
+                <table class="table">
+                    <tr>
+                        <th><h5>Загальна кількість: <strong>{{ order.get_cart_items }}</strong></h5></th>
+                        <th><h5>Загальна вартість: <strong>{{ order.get_cart_total|floatformat:2 }} UAH</strong></h5></th>
+                        <th>
+                            {% if order.get_cart_items == 0 %}
+                                <h3>Кошик порожній!</h3>
+                            {% else %}
+                                <a id="checkout" style="float:right; margin:5px;" class="btn btn-success"
+                                   href="{% url 'checkout' %}">Розрахуватися</a>
+                            {% endif %}
+
+                        </th>
+                    </tr>
+                </table>
+
+            </div>
+
+            <br>
+            <div class="box-element">
+                <div class="cart-row">
+                    <div style="flex:2"></div>
+                    <div style="flex:2"><p align="left"><strong>Продукт</strong></p></div>
+                    <div style="flex:1"><p align="left"><strong>Ціна</strong></p></div>
+                    <div style="flex:1"><p align="left"><strong>Кількість</strong></p></div>
+                    <div style="flex:1.2"><p align="left"><strong>Загальна вартість</strong></p></div>
+                    <div style="flex:1"><strong></strong></div>
+                </div>
+                {% for item in items %}
+                    <div class="cart-row">
+                        <div style="flex:2"><img class="row-image" src="{{ item.product.imageURL }}"></div>
+                        <div style="flex:2"><p>{{ item.product.name }}</p></div>
+                        <div style="flex:1"><p>{{ item.product.price|floatformat:2 }} UAH</p></div>
+                        <div style="flex:1">
+                            <p class="quantity"><input data-action="set" data-product="{{ item.product.id }}"
+                                                       class="update-cart-input" type="number" size="3"
+                                                       value="{{ item.quantity }}" maxlength="4" min="1" max="100"></p>
+                            <div class="quantity">
+                                <img data-product="{{ item.product.id }}" data-action="add"
+                                     class="chg-quantity update-cart" src="{% static  'images/arrow-up.png' %}">
+
+                                <img data-product="{{ item.product.id }}" data-action="remove"
+                                     class="chg-quantity update-cart" src="{% static  'images/arrow-down.png' %}">
+                            </div>
+                        </div>
+                        <div style="flex:1.2"><p>{{ item.get_total|floatformat:2 }} UAH</p></div>
+                        <div style="flex:1">
+                            <button type="button" class="close" aria-label="Close" style="outline: none;"
+                                    data-toggle="modal" data-target="#exampleModal">
+                                <span aria-hidden="true">
+                                    <p align="left">
+                                        &times;
+                                    </p>
+                                </span>
+                            </button>
+                            <div class="modal fade show" id="exampleModal" tabindex="-1" role="dialog"
+                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Обережно</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                                    style="outline: none">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Ви точно хочите видалити {{ item.product.name }}?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Ні
+                                            </button>
+                                            <button type="button" class="btn btn-primary update-cart"
+                                                    data-product="{{ item.product.id }}" data-action="cancel">Так, точно!
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+<br><br>
+{% endblock content %}

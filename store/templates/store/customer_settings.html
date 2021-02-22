@@ -1,0 +1,95 @@
+{% extends 'store/main.html' %}
+{% block category_block %}
+    {% for parent in parents %}
+        {% if parent.name == 'default' %}
+
+        {% endif %}
+        <div class="dropdown show">
+            <a class="nav-link" href="{% url 'category' parent.slug %}"
+               role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false">
+                {{ parent.name }}<span class="sr-only">(current)</span></a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                {% for child in childs %}
+                    {% if child.parent == parent %}
+                        <a class="dropdown-item" href="{% url 'category' child.slug %}">{{ child.name }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock category_block %}
+{% load static %}
+{% block content %}
+
+    <style>
+        .profile-pic {
+            max-width: 200px;
+            max-height: 200px;
+            margin: 0 auto;
+            border-radius: 50%;
+        }
+    </style>
+
+    <br>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card card-body">
+                <a class="btn btn-warning" href="{% url 'user-page' %}"> &#8592; Профіль</a>
+                <hr>
+                <h3 style="text-align: center">Налаштування персональних даних</h3>
+                <hr>
+                <img class="profile-pic" src="{{ request.user.customer.profile_pic.url }}">
+
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="card card-body">
+
+                <form method="POST" action="" enctype="multipart/form-data">
+                    <input type="hidden" value="data" name="chng-data">
+                    {% csrf_token %}
+{#                    {{ form.as_p }}#}
+                    Нікнейм: {{ form.name }}
+                    <br><br>
+                    Емейл: {{ form.email }}
+                    <br><br>
+                    Телефоне: {{ form.phone }}
+                    <br><br>
+                    <div>{{form.errors}}</div>
+
+                    <input class="btn btn-primary" type="submit" name="Update Information" value="Підтвердити">
+                </form>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-3">
+
+        </div>
+        <div class="col-md-9">
+            <div class="card card-body">
+
+                <form method="POST" action="" enctype="multipart/form-data">
+                    <input type="hidden" value="pass" name="chng-pass">
+                    {% csrf_token %}
+                    Старий пароль: {{ form_pass.old_password }}
+                    <br><br>
+                    Новий пароль: {{ form_pass.new_password1 }}
+                    <br><br>
+                    Підтвердження нового паролю: {{ form_pass.new_password2 }}
+                    <br><br>
+                    <div>{{form_pass.errors}}</div>
+
+                    <input class="btn btn-primary" type="submit" name="Update Password" value="Підтвердити">
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,24 @@
+[class*=mobo-] {
+text-indent: 5px;
+background-position: 0 0;
+background-repeat: no-repeat;
+display: inline-block;
+//display:inline;
+//zoom:1;
+vertical-align:middle;
+margin-right:3px;
+}
+
+/*Vodafone*/
+.mobo-vodafone-16{
+line-height:16px;
+padding-left:16px;
+background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADKUlEQVQ4T1VTTWhUVxT+zpuXMPMmkUzRdEyIqTNIB3EpCG5MN81GAiUSHUqzSKCFUuxOW3AxNKVisVtB3ZWuos0qwkwGGxcpZGGVSCOGRieZybzBN05GJ+/nvr97y32aqb3w4MG557vfzzmE944QoqdSqWQ0TfssFouNh0HwEQ9DmJZVffP69VLA+UKtVns+NTXl7beR/BFC0NbW1oeapn0ej8e/IUUZtVstsl+9gn33LvjODuzz50Uyk6manc4NwzB+m5iYaBCRiAAqlUp6YGDgkqqqX4Wca7auw3r4EKn796E9eYK/L19G/PhxOLYNz/Nsx3Fut1qtn/P5vE6StmEYF5PJ5A9BGGp2vQ53dRXpp08RX1pCw/dRXVwEtdtwbRuMMfk5juPMEdEvtLa29nE2my0FQTDqyuKDB/hgZQV99+4B29t4MziIej6P9smTsIaG4O7tRSC2bddN0xynWq32XSqVuspcF9bmJuLFIg4uLEB59gxwXQgALJFA68QJbJ47B+PYMTidjpQivStQs9n8g4g+CYQAW1nBgZs3kXr0CGg2pbvdjIJYDFtjY3g8OYm2qkY1IvpTAjwPgiDjEUGUSjg4N4dktQp43aQikIAIjZER/DU9jZeZDMj3JYMaNRqNF77vH/UVBaJcxqErV3BA1//3ugTwiVBPp/F4ehpGLgd6K6Em81/mnI8FnMPZ2IgYHF5dRZTve6ejKHiRy2HjwgW0h4aghOFbCevr698nEomfbNuG7brovXMHR2/dQv/ubmQgJwIjwsu+PmyePQv9zBn40huKnijQ8vJybnh4uGSa5hHX82Du7qJ/cRHD5TL663V4QsCQUZ46BeP0aVjJJIhz2VwnonGan5/vzWaz3wZBUHAcR5NxmqYZxdi7vQ0RhnAGB7E3MgK/pwcUhpKZQ0Q/NhqN6xGPYrF4OJFIXHIc50vGmCZH1vJ9eL6/H1ek+d3eyObbqqpem52d1bvLVCqV0pZlfeF53teMsSO+78sx79ooF4dzvkNEN1RV/XVmZua/Zdq/JeUwxrKMsUnO+adENPquVhVClBVF+V3X9X8KhUJ3SP4FwHXOlqk3+zcAAAAASUVORK5CYII=);
+}
+
+/*Мобильный*/
+.mobo-default-16{
+line-height:16px;
+padding-left:16px;
+background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAz0lEQVQ4T+3TsUrCURTH8Y8VBkKBY6tP0BCE7xHNUeIShIFLb6C0NATtLdVjtNQcNLpLiIM6BVZy4PwHhb+9gHc5nMO9v9+9l++vYnkdoo9mjudZd7K+4gafxbHKisA57rCX83ds4Tj7Ia7xUibQwiXG+MMEYbKfQru4x3OZQBt1POJn5XZVnOALT+sEwuUBxfuLvTE/w3QjsPmD/zgIlE8xwC++E+GgcBsHCVEpyhe4RS3x66CBq+xH6K4L0xF6iBphmqVzCEao3jLOHwXfCwEjQxG5N59qAAAAAElFTkSuQmCC);
+}
